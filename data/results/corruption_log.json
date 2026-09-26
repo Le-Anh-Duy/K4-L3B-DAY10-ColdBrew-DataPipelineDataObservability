@@ -1,0 +1,121 @@
+{
+  "timestamp": "2026-09-26T04:05:57.941123+00:00",
+  "original_rows": 24,
+  "corrupted_rows": 21,
+  "total_scenarios": 6,
+  "scenarios": [
+    {
+      "scenario": "drop_latest_records",
+      "description": "Dropped ~20% of the newest records to simulate ingestion pipeline drop / network partition.",
+      "affected_count": 5,
+      "affected_paper_ids": [
+        "10.1145/3637528.3671812",
+        "10.1145/3637528.3671808",
+        "10.1145/3637528.3671804",
+        "10.1145/3637528.3671807",
+        "10.1145/3637528.3671802"
+      ],
+      "parameters": {
+        "drop_ratio": 0.2,
+        "dropped_count": 5
+      }
+    },
+    {
+      "scenario": "blank_summary",
+      "description": "Erased summaries to simulate text extraction failures; triggers non-null and min-length data quality violations.",
+      "affected_count": 2,
+      "affected_paper_ids": [
+        "10.1145/3637528.3671822",
+        "10.1145/3637528.3671820"
+      ],
+      "parameters": {
+        "target_indices": [
+          2,
+          5
+        ]
+      }
+    },
+    {
+      "scenario": "inject_noise",
+      "description": "Injected synthetic corrupt tokens into summaries to disrupt vector embeddings and degrade semantic retrieval.",
+      "affected_count": 2,
+      "affected_paper_ids": [
+        "10.1145/3637528.3671821",
+        "10.1145/3637528.3671818"
+      ],
+      "parameters": {
+        "target_indices": [
+          3,
+          7
+        ],
+        "noise_marker": "0xDEADBEEF"
+      }
+    },
+    {
+      "scenario": "truncate_title",
+      "description": "Truncated titles to < 8 chars; violates title length constraints and breaks exact title search lookups.",
+      "affected_count": 2,
+      "affected_paper_ids": [
+        "10.1145/3637528.3671823",
+        "10.1145/3637528.3671819"
+      ],
+      "parameters": {
+        "target_indices": [
+          1,
+          6
+        ],
+        "max_length": 5
+      }
+    },
+    {
+      "scenario": "stale_date",
+      "description": "Subtracted 500 days from published date so age_days > 180, forcing Freshness SLA failure (> 25% stale rows).",
+      "affected_count": 9,
+      "affected_paper_ids": [
+        "10.1145/3637528.3671824",
+        "10.1145/3637528.3671823",
+        "10.1145/3637528.3671822",
+        "10.1145/3637528.3671821",
+        "10.1145/3637528.3671810",
+        "10.1145/3637528.3671820",
+        "10.1145/3637528.3671819",
+        "10.1145/3637528.3671818",
+        "10.1145/3637528.3671817"
+      ],
+      "parameters": {
+        "days_subtracted": 500,
+        "target_indices": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ]
+      }
+    },
+    {
+      "scenario": "duplicate_rows",
+      "description": "Duplicated rows to introduce duplicate paper_id values and violate primary key uniqueness.",
+      "affected_count": 2,
+      "duplicated_paper_ids": [
+        "10.1145/3637528.3671824",
+        "10.1145/3637528.3671823"
+      ],
+      "parameters": {
+        "duplicate_count": 2
+      }
+    }
+  ],
+  "summary": {
+    "dropped_count": 5,
+    "blanked_count": 2,
+    "noise_injected_count": 2,
+    "title_truncated_count": 2,
+    "stale_date_count": 9,
+    "duplicate_added_count": 2
+  }
+}

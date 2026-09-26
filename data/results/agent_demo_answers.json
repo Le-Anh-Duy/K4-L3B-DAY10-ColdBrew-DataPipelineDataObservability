@@ -1,0 +1,10 @@
+[
+  {
+    "question": "What is the summary of the paper 'Continuous Benchmark Evaluation for Enterprise Retrieval Pipelines'?",
+    "answer": "The paper **\"Continuous Benchmark Evaluation for Enterprise Retrieval Pipelines\"** by Quang Le and Yen Vu addresses a key limitation in evaluating enterprise retrieval systems: traditional static benchmarks cannot keep up with or capture domain drift in dynamic enterprise knowledge bases. \n\nTo solve this, the authors establish a **synthetic test generator** that automatically creates paired evaluation sets whenever new corpora are ingested into the system, enabling continuous and reliable benchmark evaluation for enterprise retrieval pipelines."
+  },
+  {
+    "question": "Who authored 'Synthetic Corruption Testing: Stress-Testing Vector Search Robustness'?",
+    "answer": "'Synthetic Corruption Testing: Stress-Testing Vector Search Robustness' was authored by **Kien Duong** and **Vy Ly**."
+  }
+]
