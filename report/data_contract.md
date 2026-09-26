@@ -107,7 +107,15 @@ Chạy với `run_date` = 2026-09-26:
 
 Repair **luôn** chạy lại `load_raw_records(settings.paths.raw_records_json)` + `build_clean_dataframe(...)` từ raw, không sửa trên dữ liệu đã bị corrupt. Hai hàm này là hàm thuần (cùng input thì cùng output, trừ `age_days` phụ thuộc `run_date`), nên repair idempotent. Để so sánh baseline và repaired được khớp, dùng cùng `run_date` trong một lần chạy.
 
-## 7. Lệnh xác minh
+## 7. Lệnh chạy & xác minh
+
+Sinh raw + clean artifacts (`data/raw/*.json`, `data/clean/papers_clean.{csv,json}`) trong một lệnh:
+
+```bash
+.venv\Scripts\python script/run_ingestion.py
+```
+
+Lệnh kiểm tra CP0/CP1:
 
 ```bash
 python -c "from core.config import load_settings; from ingestion.crossref import fetch_source_records; s=load_settings(); r=fetch_source_records(s); print(f'Tín hiệu hoàn thành: Đã tải {len(r)} bài báo')"
