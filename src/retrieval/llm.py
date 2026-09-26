@@ -7,6 +7,8 @@ from langchain_openai import ChatOpenAI
 
 from core.config import Settings, normalized_provider, require_llm_credentials
 
+LLM_TIMEOUT_SECONDS = 60  # mang chap chon khong lam pipeline treo vo thoi han
+
 
 def build_llm(settings: Settings, temperature: float = 0.0):
     provider = normalized_provider(settings)
@@ -17,18 +19,21 @@ def build_llm(settings: Settings, temperature: float = 0.0):
             model=settings.model_name,
             google_api_key=settings.google_api_key,
             temperature=temperature,
+            timeout=LLM_TIMEOUT_SECONDS,
         )
     if provider == "openai":
         return ChatOpenAI(
             model=settings.model_name,
             api_key=settings.openai_api_key,
             temperature=temperature,
+            timeout=LLM_TIMEOUT_SECONDS,
         )
     if provider == "anthropic":
         return ChatAnthropic(
             model=settings.model_name,
             api_key=settings.anthropic_api_key,
             temperature=temperature,
+            timeout=LLM_TIMEOUT_SECONDS,
         )
     if provider == "openrouter":
         return ChatOpenAI(
@@ -36,6 +41,7 @@ def build_llm(settings: Settings, temperature: float = 0.0):
             api_key=settings.openrouter_api_key,
             base_url=settings.openrouter_base_url,
             temperature=temperature,
+            timeout=LLM_TIMEOUT_SECONDS,
         )
     if provider == "ollama":
         return ChatOllama(
@@ -49,6 +55,7 @@ def build_llm(settings: Settings, temperature: float = 0.0):
             api_key=settings.custom_llm_api_key or "unused",
             base_url=settings.custom_llm_base_url,
             temperature=temperature,
+            timeout=LLM_TIMEOUT_SECONDS,
         )
     if provider == "mock":
         from langchain_core.language_models.fake_chat_models import FakeListChatModel
@@ -57,6 +64,10 @@ def build_llm(settings: Settings, temperature: float = 0.0):
             # create_agent goi bind_tools; mock bo qua tools va tra loi co dinh.
             def bind_tools(self, tools, **kwargs):
                 return self
+
+            # Giu hanh vi goc: khong ho tro structured output -> evaluation dung heuristic judge.
+            def with_structured_output(self, schema, **kwargs):
+                raise NotImplementedError("mock provider has no structured output")
 
         return ToolCapableFakeChatModel(responses=["This is a mock response from the scholarly corpus."])
     raise RuntimeError(f"Unsupported LLM provider: {settings.llm_provider}")
