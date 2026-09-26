@@ -26,6 +26,11 @@
   - Phân tích payload JSON thành danh sách cấu trúc `PaperRecord`, bảo toàn 2 file dữ liệu thô phục vụ data lineage: `crossref_response.json` và `crossref_records.json`.
   - Triển khai quy trình làm sạch thuần túy trong `src/ingestion/cleaning.py`: loại bỏ tag JATS XML (`<jats:p>`, `<jats:title>`), unescape HTML entities, gom khoảng trắng, tính toán chuẩn hóa `age_days` (UTC), khử trùng lặp theo `paper_id` (DOI chữ thường) giữ bản ghi mới nhất, và tạo chuỗi 5 thành phần `text_for_embedding`.
   - Khởi tạo và đồng bộ tài liệu Data Contract chi tiết tại `report/data_contract.md`, cung cấp dữ liệu sạch 24 dòng tại `data/clean/papers_clean.csv` và `papers_clean.json`.
+- **Đóng góp ngoài phạm vi chính:**
+  - Viết `script/smoke_retrieval.py` làm bằng chứng cho rubric mục 4–5 (index 24/24 docs, tìm theo title trúng top-4 100%, QA trích xuất 4/4); sửa agent `mock` thiếu `bind_tools` và agent Gemini trả về content block thay vì text (`src/retrieval/llm.py`, `agent.py`).
+  - Sửa `src/retrieval/index.py` để manifest lưu đường dẫn tương đối `data/chroma` thay vì đường dẫn tuyệt đối; bỏ `data/chroma`, `data/embeddings` khỏi git (`.gitignore`).
+  - Xây dựng chat demo `demo/` (`src/retrieval/rag.py`, `chat.py`, `guardrails.py`): nhớ hội thoại theo session, LLM tự quyết định có retrieve qua tool calling, multi-query retrieval, chặn prompt injection, giới hạn 3 lượt gọi LLM mỗi câu hỏi.
+  - Data profiling dữ liệu clean/corrupted và tổng hợp trang báo cáo HTML cho buổi thuyết trình; đối chiếu lại các báo cáo với artifact trong repo.
 - **Điều học được / Đóng góp chính:**
   - Nắm vững kỹ thuật bảo toàn nguyên trạng dữ liệu nguồn (Immutable Data Lineage) và nguyên lý thiết kế hàm làm sạch thuần túy (pure functions) để hỗ trợ phục hồi dữ liệu Idempotent.
 
