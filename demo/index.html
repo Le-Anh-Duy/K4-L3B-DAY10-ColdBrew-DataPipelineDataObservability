@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Paper QA</title>
+<style>
+  :root {
+    --bg: #fafaf9; --fg: #1c1917; --muted: #78716c; --line: #e7e5e4; --card: #fff; --user: #eef2ff;
+    --accent: #2563eb; --warn-bg: #fef3c7; --warn-fg: #92400e; --ok-bg: #dcfce7; --ok-fg: #166534; --err: #dc2626;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0c0a09; --fg: #e7e5e4; --muted: #a8a29e; --line: #292524; --card: #1c1917; --user: #1e1b4b;
+      --accent: #60a5fa; --warn-bg: #422006; --warn-fg: #fcd34d; --ok-bg: #052e16; --ok-fg: #86efac; --err: #f87171;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0c0a09; --fg: #e7e5e4; --muted: #a8a29e; --line: #292524; --card: #1c1917; --user: #1e1b4b;
+    --accent: #60a5fa; --warn-bg: #422006; --warn-fg: #fcd34d; --ok-bg: #052e16; --ok-fg: #86efac; --err: #f87171;
+  }
+  :root[data-theme="dark"] { color-scheme: dark; }
+  :root[data-theme="light"] { color-scheme: light; }
+  * { box-sizing: border-box; }
+  html, body, #root { height: 100%; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 15px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  .app { display: flex; flex-direction: column; height: 100%; max-width: 760px; margin: 0 auto; }
+
+  header { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 12px 16px; border-bottom: 1px solid var(--line); }
+  header h1 { font-size: 16px; margin: 0; }
+  header .sub { font-size: 12px; color: var(--muted); }
+  .icon-btn { background: none; border: 1px solid var(--line); color: var(--muted); border-radius: 8px; padding: 5px 10px; font: inherit; font-size: 13px; cursor: pointer; }
+  .icon-btn:hover, .icon-btn.on { color: var(--fg); border-color: var(--muted); }
+  .settings { display: flex; flex-wrap: wrap; gap: 6px 16px; padding: 10px 16px; border-bottom: 1px solid var(--line); font-size: 13px; color: var(--muted); }
+  .settings label { display: flex; align-items: center; gap: 6px; cursor: pointer; user-select: none; }
+
+  .chat { flex: 1; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 14px; }
+  .empty { margin: auto 0; text-align: center; color: var(--muted); font-size: 14px; }
+  .chips { display: flex; flex-direction: column; align-items: center; gap: 6px; margin-top: 12px; }
+  .chip { background: var(--card); border: 1px solid var(--line); color: var(--fg); padding: 6px 12px; font: inherit; font-size: 13px; border-radius: 999px; cursor: pointer; max-width: 100%; }
+  .chip:hover { border-color: var(--accent); }
+
+  .msg { max-width: 88%; }
+  .msg.user { align-self: flex-end; background: var(--user); padding: 8px 12px; border-radius: 14px 14px 4px 14px; }
+  .msg.bot { align-self: flex-start; }
+  .bubble { background: var(--card); border: 1px solid var(--line); padding: 10px 12px; border-radius: 14px 14px 14px 4px; white-space: pre-wrap; }
+  .typing { color: var(--muted); font-size: 13px; }
+  .cite { color: var(--accent); text-decoration: none; font-size: 11px; vertical-align: super; padding: 0 1px; cursor: pointer; }
+  .meta { font-size: 12px; color: var(--muted); margin-top: 4px; }
+  .err { color: var(--err); font-size: 13px; }
+  .bubble.guard { background: var(--warn-bg); color: var(--warn-fg); border-color: transparent; }
+  .callout { margin-top: 8px; padding: 8px 10px; border-left: 3px solid var(--accent); background: var(--card); font-size: 13px; border-radius: 4px; }
+  a { color: var(--accent); }
+
+  .src-toggle { background: none; border: 0; padding: 0; margin-top: 6px; color: var(--muted); font: inherit; font-size: 12px; cursor: pointer; }
+  .src-toggle:hover { color: var(--fg); }
+  .srcs { margin: 6px 0 0; padding: 0; list-style: none; display: grid; gap: 6px; }
+  .src { padding: 8px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--card); font-size: 13px; scroll-margin: 16px; }
+  .src.hl { border-color: var(--accent); }
+  .src .t { font-weight: 600; }
+  .badge { display: inline-block; font-size: 10px; padding: 1px 5px; border-radius: 4px; margin-left: 6px; vertical-align: 1px; font-weight: 500; }
+  .mock { background: var(--warn-bg); color: var(--warn-fg); }
+  .live { background: var(--ok-bg); color: var(--ok-fg); }
+
+  form { display: flex; gap: 8px; padding: 12px 16px 16px; border-top: 1px solid var(--line); }
+  textarea { flex: 1; min-width: 0; resize: none; padding: 10px 12px; border: 1px solid var(--line); border-radius: 10px; background: var(--card); color: var(--fg); font: inherit; max-height: 140px; }
+  textarea:focus { outline: 2px solid var(--accent); outline-offset: -1px; }
+  .send { padding: 0 16px; border: 0; border-radius: 10px; background: var(--accent); color: #fff; font: inherit; cursor: pointer; }
+  .send:disabled { opacity: .45; cursor: default; }
+  .net { display: flex; align-items: center; gap: 4px; font-size: 12px; color: var(--muted); cursor: pointer; user-select: none; white-space: nowrap; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script src="https://cdn.jsdelivr.net/npm/react@18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/htm@3.1.1/dist/htm.umd.js"></script>
+<script>
+const { useState, useEffect, useRef } = React;
+const html = htm.bind(React.createElement);
+const EXAMPLES = [
+  "Who authored 'Data Observability and Quality Gates for Production RAG Systems'?",
+  "Bài nào nói về kiểm soát chất lượng dữ liệu?",
+  "How does agentic RAG route across vector indices?",
+];
+const DEFAULT_PREFS = { internet: false, showSources: false, showDetails: false, theme: null }; // theme null = theo hệ điều hành
+const systemDark = () => window.matchMedia?.("(prefers-color-scheme: dark)").matches;
+
+// Session theo tab: server giu lich su hoi thoai theo id nay.
+function sessionId() {
+  try {
+    let id = sessionStorage.getItem("paperqa-session");
+    if (!id) { id = crypto.randomUUID(); sessionStorage.setItem("paperqa-session", id); }
+    return id;
+  } catch { return (window.__sid ||= crypto.randomUUID()); }
+}
+const ROUTE_LABEL = {
+  retrieve: "có retrieve", direct: "không retrieve", blocked: "chặn (prompt injection)",
+  rate_limited: "giới hạn tốc độ", invalid: "không hợp lệ",
+};
+
+function loadPrefs() {
+  try { return { ...DEFAULT_PREFS, ...JSON.parse(localStorage.getItem("paperqa-prefs") || "{}") }; }
+  catch { return DEFAULT_PREFS; }
+}
+
+function Answer({ text, tags, onCite }) {
+  return text.split(/(\[W?\d+\])/g).map((part, i) => {
+    const m = part.match(/^\[(W?\d+)\]$/);
+    return m && tags.includes(m[1]) ? html`<a key=${i} class="cite" onClick=${() => onCite(m[1])}>[${m[1]}]</a>` : part;
+  });
+}
+
+function Sources({ sources, cited, id, highlight }) {
+  return html`<ul class="srcs">${sources.map(s => html`
+    <li key=${s.tag} id=${`${id}-${s.tag}`} class=${"src" + (highlight === s.tag || (!highlight && cited.includes(s.tag)) ? " hl" : "")}>
+      <div class="t">[${s.tag}] <a href=${s.url} target="_blank" rel="noopener">${s.title}</a>
+        ${s.origin === "crossref"
+          ? html`<span class="badge live">Crossref live</span>`
+          : html`<span class="badge mock" title="Corpus snapshot là dữ liệu mock: DOI có thể mở ra một bài khác">mock</span>`}
+      </div>
+      <div class="meta">${s.authors || "—"} · ${s.published}${s.score != null ? ` · score ${s.score.toFixed(2)}` : ""}</div>
+    </li>`)}</ul>`;
+}
+
+function BotMessage({ m, id, prefs }) {
+  const [open, setOpen] = useState(prefs.showSources);
+  const [highlight, setHighlight] = useState(null);
+  useEffect(() => setOpen(prefs.showSources), [prefs.showSources]);
+
+  if (m.pending) return html`<div class="msg bot"><div class="typing">Đang tìm và trả lời…</div></div>`;
+  if (m.error) return html`<div class="msg bot"><div class="err">${m.error}</div></div>`;
+
+  const r = m.result;
+  const cited = r.cited_tags || [];
+  const readFirst = r.sources.find(s => cited.includes(s.tag)) || r.sources[0];
+  const citeClick = tag => {
+    setOpen(true); setHighlight(tag);
+    setTimeout(() => document.getElementById(`${id}-${tag}`)?.scrollIntoView({ behavior: "smooth", block: "nearest" }), 0);
+  };
+
+  return html`<div class="msg bot">
+    <div class=${"bubble" + (r.mode === "guardrail" ? " guard" : "")}><${Answer} text=${r.answer} tags=${r.sources.map(s => s.tag)} onCite=${citeClick} /></div>
+    ${r.deep && readFirst && html`<div class="callout">
+      Cần chi tiết ngoài abstract? Đọc bài gốc: <a href=${readFirst.url} target="_blank" rel="noopener">${readFirst.title} ↗</a>
+      ${readFirst.origin === "snapshot" && html`<div class="meta">Corpus local là mock, link có thể mở ra bài khác. Bật “Internet” để tìm bài thật.</div>`}
+    </div>`}
+    ${r.web_error && html`<div class="err">${r.web_error}</div>`}
+    ${prefs.showDetails && html`<div class="meta">
+      ${ROUTE_LABEL[r.route] || r.route}${r.mode === "extractive" ? " · trích xuất (không LLM)" : ""}
+      ${r.search_query ? ` · query: “${r.search_query}”` : ""}
+      ${r.route_reason ? ` · ${r.route_reason}` : ""}${r.memory_turns != null ? ` · nhớ ${r.memory_turns} lượt` : ""}
+      ${r.note ? ` · ${r.note}` : ""}
+    </div>`}
+    ${r.sources.length > 0 && html`<button class="src-toggle" onClick=${() => setOpen(!open)}>
+      ${open ? "▾" : "▸"} Nguồn (${r.sources.length})${cited.length ? ` · trích ${cited.length}` : ""}
+    </button>`}
+    ${open && html`<${Sources} sources=${r.sources} cited=${cited} id=${id} highlight=${highlight} />`}
+  </div>`;
+}
+
+function App() {
+  const [prefs, setPrefs] = useState(loadPrefs);
+  const [messages, setMessages] = useState([]);
+  const [draft, setDraft] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
+  const [stats, setStats] = useState(null);
+  const chatRef = useRef(null);
+
+  useEffect(() => { fetch("/api/stats").then(r => r.json()).then(setStats).catch(() => {}); }, []);
+  useEffect(() => { try { localStorage.setItem("paperqa-prefs", JSON.stringify(prefs)); } catch {} }, [prefs]);
+  useEffect(() => {
+    if (prefs.theme) document.documentElement.dataset.theme = prefs.theme;
+    else delete document.documentElement.dataset.theme;
+  }, [prefs.theme]);
+  const isDark = prefs.theme ? prefs.theme === "dark" : systemDark();
+  const toggleTheme = () => setPrefs(p => ({ ...p, theme: isDark ? "light" : "dark" }));
+  useEffect(() => { chatRef.current?.scrollTo({ top: chatRef.current.scrollHeight, behavior: "smooth" }); }, [messages]);
+
+  const setPref = key => e => setPrefs(p => ({ ...p, [key]: e.target.checked }));
+
+  function clearChat() {
+    setMessages([]);
+    fetch("/api/reset", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ session_id: sessionId() }) }).catch(() => {});
+  }
+
+  async function ask(question) {
+    question = question.trim();
+    if (!question || busy) return;
+    setBusy(true); setDraft("");
+    setMessages(ms => [...ms, { role: "user", text: question }, { role: "bot", pending: true }]);
+    const finish = patch => setMessages(ms => [...ms.slice(0, -1), { role: "bot", ...patch }]);
+    try {
+      const res = await fetch("/api/ask", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ question, internet: prefs.internet, session_id: sessionId() }),
+      });
+      const data = await res.json();
+      res.ok ? finish({ result: data }) : finish({ error: data.error || `HTTP ${res.status}` });
+    } catch { finish({ error: "Không kết nối được server demo." }); }
+    setBusy(false);
+  }
+
+  return html`<div class="app">
+    <header>
+      <div>
+        <h1>Paper QA</h1>
+        <div class="sub">${stats ? `${stats.docs} bài · ${stats.llm}` : "RAG trên corpus Crossref"}</div>
+      </div>
+      <div style=${{ display: "flex", gap: "6px" }}>
+        ${messages.length > 0 && html`<button class="icon-btn" onClick=${clearChat} disabled=${busy}>Xóa chat</button>`}
+        <button class="icon-btn" onClick=${toggleTheme} title=${isDark ? "Chuyển sang sáng" : "Chuyển sang tối"} aria-label="Đổi theme">${isDark ? "☀" : "☾"}</button>
+        <button class=${"icon-btn" + (showSettings ? " on" : "")} onClick=${() => setShowSettings(!showSettings)}>Tùy chọn</button>
+      </div>
+    </header>
+
+    ${showSettings && html`<div class="settings">
+      <label><input type="checkbox" checked=${prefs.showSources} onChange=${setPref("showSources")} /> Luôn mở nguồn</label>
+      <label><input type="checkbox" checked=${prefs.showDetails} onChange=${setPref("showDetails")} /> Chi tiết kỹ thuật</label>
+    </div>`}
+
+    <div class="chat" ref=${chatRef}>
+      ${messages.length === 0 && html`<div class="empty">
+        Hỏi về các bài báo trong corpus. Bấm [n] trong câu trả lời để xem nguồn.
+        <div class="chips">${EXAMPLES.map(ex => html`<button key=${ex} class="chip" onClick=${() => ask(ex)}>${ex}</button>`)}</div>
+      </div>`}
+      ${messages.map((m, i) => m.role === "user"
+        ? html`<div key=${i} class="msg user">${m.text}</div>`
+        : html`<${BotMessage} key=${i} m=${m} id=${"m" + i} prefs=${prefs} />`)}
+    </div>
+
+    <form onSubmit=${e => { e.preventDefault(); ask(draft); }}>
+      <textarea rows="1" value=${draft} placeholder="Nhập câu hỏi… (Enter để gửi)"
+        onInput=${e => setDraft(e.target.value)}
+        onKeyDown=${e => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); ask(draft); } }} />
+      <label class="net" title="Tra thêm bài thật trên Crossref API">
+        <input type="checkbox" checked=${prefs.internet} onChange=${setPref("internet")} /> Internet
+      </label>
+      <button class="send" disabled=${busy || !draft.trim()}>Gửi</button>
+    </form>
+  </div>`;
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(html`<${App} />`);
+</script>
+</body>
+</html>

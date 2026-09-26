@@ -8,7 +8,7 @@
 | retrieval_hit_rate | 1.0 | 0.8 | 1.0 | -0.2000 | +0.2000 |
 | mean_token_f1 | 1.0 | 0.674074074074074 | 1.0 | -0.3259 | +0.3259 |
 | judge_accuracy | 1.0 | 0.7 | 1.0 | -0.3000 | +0.3000 |
-| mean_judge_score | 5 | 3.6 | 5 | -1.4000 | +1.4000 |
+| mean_judge_score | 5 | 3.8 | 5 | -1.2000 | +1.2000 |
 
 | Signal | Baseline | Corrupted | Repaired |
 | --- | --- | --- | --- |

@@ -7,7 +7,7 @@ from langchain.tools import tool
 
 from core.config import Settings
 from retrieval.index import LocalEmbeddingIndex
-from retrieval.llm import build_llm
+from retrieval.llm import build_llm, message_text
 
 
 def build_agent(settings: Settings, index: LocalEmbeddingIndex):
@@ -55,5 +55,4 @@ def run_agent_question(agent: Any, question: str) -> str:
     messages = result.get("messages", [])
     if not messages:
         return ""
-    final_message = messages[-1]
-    return getattr(final_message, "content", str(final_message))
+    return message_text(messages[-1])

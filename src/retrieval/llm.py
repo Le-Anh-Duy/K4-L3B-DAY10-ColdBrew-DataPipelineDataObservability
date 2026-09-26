@@ -53,5 +53,18 @@ def build_llm(settings: Settings, temperature: float = 0.0):
     if provider == "mock":
         from langchain_core.language_models.fake_chat_models import FakeListChatModel
 
-        return FakeListChatModel(responses=["This is a mock response from the scholarly corpus."])
+        class ToolCapableFakeChatModel(FakeListChatModel):
+            # create_agent goi bind_tools; mock bo qua tools va tra loi co dinh.
+            def bind_tools(self, tools, **kwargs):
+                return self
+
+        return ToolCapableFakeChatModel(responses=["This is a mock response from the scholarly corpus."])
     raise RuntimeError(f"Unsupported LLM provider: {settings.llm_provider}")
+
+
+def message_text(message) -> str:
+    """Lay text tu AIMessage; Gemini co the tra `content` dang list content blocks."""
+    content = getattr(message, "content", message)
+    if isinstance(content, list):
+        return "".join(part.get("text", "") if isinstance(part, dict) else str(part) for part in content)
+    return str(content)
