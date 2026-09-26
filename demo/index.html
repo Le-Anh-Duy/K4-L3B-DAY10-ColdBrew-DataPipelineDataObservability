@@ -47,6 +47,9 @@
   .typing { color: var(--muted); font-size: 13px; }
   .cite { color: var(--accent); text-decoration: none; font-size: 11px; vertical-align: super; padding: 0 1px; cursor: pointer; }
   .meta { font-size: 12px; color: var(--muted); margin-top: 4px; }
+  .queries { font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+  .queries span { display: inline-block; background: var(--card); border: 1px solid var(--line); border-radius: 999px; padding: 0 8px; margin: 2px 4px 0 0; }
+  .hint { font-size: 12px; color: var(--muted); margin-top: 6px; }
   .err { color: var(--err); font-size: 13px; }
   .bubble.guard { background: var(--warn-bg); color: var(--warn-fg); border-color: transparent; }
   .callout { margin-top: 8px; padding: 8px 10px; border-left: 3px solid var(--accent); background: var(--card); font-size: 13px; border-radius: 4px; }
@@ -119,7 +122,7 @@ function Sources({ sources, cited, id, highlight }) {
           ? html`<span class="badge live">Crossref live</span>`
           : html`<span class="badge mock" title="Corpus snapshot là dữ liệu mock: DOI có thể mở ra một bài khác">mock</span>`}
       </div>
-      <div class="meta">${s.authors || "—"} · ${s.published}${s.score != null ? ` · score ${s.score.toFixed(2)}` : ""}</div>
+      <div class="meta">${s.authors || "—"} · ${s.published}${s.score != null ? ` · score ${s.score.toFixed(2)}` : ""}${s.query ? ` · tìm bởi “${s.query}”` : ""}</div>
     </li>`)}</ul>`;
 }
 
@@ -134,21 +137,26 @@ function BotMessage({ m, id, prefs }) {
   const r = m.result;
   const cited = r.cited_tags || [];
   const readFirst = r.sources.find(s => cited.includes(s.tag)) || r.sources[0];
+  const queries = r.search_queries || [];
+  const localScores = r.sources.filter(s => s.origin === "snapshot").map(s => s.score || 0);
+  const weakLocal = r.route === "retrieve" && !prefs.internet && localScores.length > 0 && Math.max(...localScores) < 0.5;
   const citeClick = tag => {
     setOpen(true); setHighlight(tag);
     setTimeout(() => document.getElementById(`${id}-${tag}`)?.scrollIntoView({ behavior: "smooth", block: "nearest" }), 0);
   };
 
   return html`<div class="msg bot">
+    ${queries.length > 0 && html`<div class="queries">🔎 Truy vấn: ${queries.map(q => html`<span key=${q}>${q}</span>`)}</div>`}
     <div class=${"bubble" + (r.mode === "guardrail" ? " guard" : "")}><${Answer} text=${r.answer} tags=${r.sources.map(s => s.tag)} onCite=${citeClick} /></div>
     ${r.deep && readFirst && html`<div class="callout">
       Cần chi tiết ngoài abstract? Đọc bài gốc: <a href=${readFirst.url} target="_blank" rel="noopener">${readFirst.title} ↗</a>
       ${readFirst.origin === "snapshot" && html`<div class="meta">Corpus local là mock, link có thể mở ra bài khác. Bật “Internet” để tìm bài thật.</div>`}
     </div>`}
     ${r.web_error && html`<div class="err">${r.web_error}</div>`}
+    ${weakLocal && html`<div class="hint">Độ liên quan trong corpus local thấp. Bật “Internet” để tìm thêm bài thật trên Crossref.</div>`}
     ${prefs.showDetails && html`<div class="meta">
       ${ROUTE_LABEL[r.route] || r.route}${r.mode === "extractive" ? " · trích xuất (không LLM)" : ""}
-      ${r.search_query ? ` · query: “${r.search_query}”` : ""}
+      ${r.llm_calls != null ? ` · ${r.llm_calls} lượt gọi LLM` : ""}
       ${r.route_reason ? ` · ${r.route_reason}` : ""}${r.memory_turns != null ? ` · nhớ ${r.memory_turns} lượt` : ""}
       ${r.note ? ` · ${r.note}` : ""}
     </div>`}

@@ -62,6 +62,26 @@ def build_llm(settings: Settings, temperature: float = 0.0):
     raise RuntimeError(f"Unsupported LLM provider: {settings.llm_provider}")
 
 
+class LLMBudgetExceeded(RuntimeError):
+    pass
+
+
+class LLMBudget:
+    """Dem va gioi han so lan goi LLM cho 1 cau hoi (tiet kiem chi phi)."""
+
+    def __init__(self, settings: Settings, limit: int = 3):
+        self.settings = settings
+        self.limit = limit
+        self.used = 0
+
+    def invoke(self, messages, tools: list | None = None):
+        if self.used >= self.limit:
+            raise LLMBudgetExceeded(f"LLM call budget exceeded ({self.limit} per question)")
+        self.used += 1
+        llm = build_llm(settings=self.settings, temperature=0.0)
+        return (llm.bind_tools(tools) if tools else llm).invoke(messages)
+
+
 def message_text(message) -> str:
     """Lay text tu AIMessage; Gemini co the tra `content` dang list content blocks."""
     content = getattr(message, "content", message)

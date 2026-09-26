@@ -6,3 +6,9 @@ src/*.egg-info/
 lab/
 **/__pycache__/
 doc_verification_report.md
+
+# Generated vector store + embedding manifests (rebuild with script/run_phase1.py)
+data/chroma/*
+!data/chroma/.gitkeep
+data/embeddings/*
+!data/embeddings/.gitkeep

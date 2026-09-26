@@ -116,7 +116,7 @@ class LocalEmbeddingIndex:
             {
                 "backend": "chroma",
                 "embedding_model": settings.embedding_model,
-                "persist_path": str(persist_path),
+                "persist_path": cls._portable_path(settings, persist_path),
                 "collection_name": collection_name,
                 "documents": documents,
             },
@@ -135,8 +135,24 @@ class LocalEmbeddingIndex:
             settings=settings,
             collection_name=payload["collection_name"],
             documents=payload["documents"],
-            persist_path=Path(payload["persist_path"]),
+            persist_path=cls._resolve_path(settings, payload["persist_path"]),
         )
+
+    @staticmethod
+    def _portable_path(settings: Settings, path: Path) -> str:
+        """Luu duong dan tuong doi voi project (vd `data/chroma`) de manifest dung duoc tren may khac."""
+        try:
+            return path.resolve().relative_to(settings.paths.project_dir).as_posix()
+        except ValueError:
+            return str(path)
+
+    @staticmethod
+    def _resolve_path(settings: Settings, value: str) -> Path:
+        path = Path(value)
+        if not path.is_absolute():
+            return settings.paths.project_dir / path
+        # Manifest cu luu duong dan tuyet doi cua may khac -> dung chroma_dir cua project nay.
+        return path if path.exists() else settings.paths.chroma_dir
 
     def search(self, query: str, top_k: int | None = None) -> list[SearchResult]:
         query_embedding = self.embedding_model.embed_query(query)
