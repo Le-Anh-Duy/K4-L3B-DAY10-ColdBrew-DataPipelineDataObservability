@@ -44,7 +44,7 @@
 | Thiết kế cơ chế tự phục hồi an toàn (Idempotent Repair) | `src/pipelines/corruption_flow.py`<br>Bước 6 & 7 | Khôi phục 100% dữ liệu gốc từ `crossref_records.json`, index lại vào `papers-repaired` | Chỉ số `retrieval_hit_rate` và `mean_token_f1` phục hồi tuyệt đối từ 0.8 & 0.6741 về 1.0 & 1.0 |
 
 **Output cụ thể bàn giao:**
-Bảng đối chiếu định lượng 3 trạng thái trong [corruption_report.md](file:///d:/HCMUT/vinAI/Lab/K4-L3B-DAY10-ColdBrew-DataPipelineDataObservability/data/reports/corruption_report.md) và audit log [corruption_log.json](file:///d:/HCMUT/vinAI/Lab/K4-L3B-DAY10-ColdBrew-DataPipelineDataObservability/data/results/corruption_log.json) ghi nhận chi tiết 5 bài báo bị drop, 2 bài bị blank summary, 2 bài bị inject noise, 2 bài bị truncate title, 9 bài bị lùi ngày quá hạn và 2 bài bị duplicate.
+Bảng đối chiếu định lượng 3 trạng thái trong [corruption_report.md](../data/reports/corruption_report.md) và audit log [corruption_log.json](../data/results/corruption_log.json) ghi nhận chi tiết 5 bài báo bị drop, 2 bài bị blank summary, 2 bài bị inject noise, 2 bài bị truncate title, 9 bài bị lùi ngày quá hạn và 2 bài bị duplicate.
 
 ---
 

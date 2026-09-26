@@ -114,8 +114,8 @@ python -m pip install -e .
 
 | Lệnh | Trạng thái | Thời điểm chạy gần nhất | Bằng chứng |
 | ----------------- | :---: | :---: | :--- |
-| `run_phase1.py` | **Thành công** | 2026-09-26 11:05 UTC | Sinh đầy đủ 7 artifacts, console in `PHASE 1 COMPLETED SUCCESSFULLY!`, Hit Rate = 1.0, Token F1 = 1.0, Quality = PASS |
-| `run_corruption_flow.py` | **Thành công** | 2026-09-26 11:15 UTC | Bảng đối chiếu 3 trạng thái in ra console, báo cáo `data/reports/corruption_report.md` ghi nhận sự phục hồi từ 0.8 lên 1.0 |
+| `run_phase1.py` | **Thành công** | 2026-09-26 11:05 (UTC+7) | Sinh đầy đủ 7 artifacts, console in `PHASE 1 COMPLETED SUCCESSFULLY!`, Hit Rate = 1.0, Token F1 = 1.0, Quality = PASS |
+| `run_corruption_flow.py` | **Thành công** | 2026-09-26 11:06 (UTC+7) | Bảng đối chiếu 3 trạng thái in ra console, báo cáo `data/reports/corruption_report.md` ghi nhận sự phục hồi từ 0.8 lên 1.0 |
 
 ---
 

@@ -45,7 +45,7 @@
 | Xây dựng engine sinh báo cáo đối chiếu đa trạng thái | `src/observability/reporting.py`<br>`generate_*_report` | Báo cáo Markdown chi tiết cho Pha 1 và bảng so sánh Baseline vs Corrupted vs Repaired | Kiểm tra `data/reports/phase1_report.md` và `data/reports/corruption_report.md` |
 
 **Output cụ thể bàn giao:**
-Bộ benchmark chuẩn [test_set.json](file:///d:/HCMUT/vinAI/Lab/K4-L3B-DAY10-ColdBrew-DataPipelineDataObservability/data/eval/test_set.json) gồm 10 câu hỏi phân bổ khoa học, hệ thống chốt kiểm dịch Great Expectations 1.x phát hiện chính xác 100% lỗi vi phạm trên tập dữ liệu bẩn, và báo cáo đối chiếu định lượng [corruption_report.md](file:///d:/HCMUT/vinAI/Lab/K4-L3B-DAY10-ColdBrew-DataPipelineDataObservability/data/reports/corruption_report.md).
+Bộ benchmark chuẩn [test_set.json](../data/eval/test_set.json) gồm 10 câu hỏi phân bổ khoa học, hệ thống chốt kiểm dịch Great Expectations 1.x phát hiện chính xác 100% lỗi vi phạm trên tập dữ liệu bẩn, và báo cáo đối chiếu định lượng [corruption_report.md](../data/reports/corruption_report.md).
 
 ---
 

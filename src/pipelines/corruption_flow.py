@@ -3,9 +3,15 @@ from __future__ import annotations
 from datetime import datetime, timezone
 import logging
 from pathlib import Path
+import sys
 from typing import Any
 
 import pandas as pd
+
+# Chay truc tiep `python src/pipelines/corruption_flow.py` (chua `pip install -e .`) -> dua src/ vao sys.path.
+_SRC_DIR = str(Path(__file__).resolve().parents[1])
+if _SRC_DIR not in sys.path:
+    sys.path.insert(0, _SRC_DIR)
 
 from core.config import Settings, load_settings
 from core.utils import ensure_parent, now_utc, read_json, write_csv, write_json, write_text
